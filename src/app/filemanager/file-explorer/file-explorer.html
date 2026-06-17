@@ -1,0 +1,35 @@
+<div class="explorer-window">
+    <div class="title-bar">
+        Angular File Explorer
+    </div>
+    <div class="toolbar">
+        <button>New Folder</button>
+        <button>Upload</button>
+    </div>
+    <div class="content">
+    <div class="content-folder">    
+        @for(node of fs.fileTree();track node.id) {
+            <app-file-tree-node [node]="node"   
+            [selectedId]="fs.selectedNode()?.id"
+            (nodeClick)="onselect($event)"
+            (nodeRightClick)="onRightClick($event)">
+            </app-file-tree-node>
+        }
+    </div>
+    <div class="content-details">
+        <div *ngIf="fs.selectedNode() as node">
+            <h3>{{node.name}}</h3>
+            <p>Type: {{node.type}}</p>
+            <p>Size: {{node.size}} bytes</p>
+        </div>
+        <div *ngIf="!fs.selectedNode()">
+            <p>Select a file or folder to see details</p>
+        </div>
+</div>
+<app-context-menu [visible]="menuVisible()"
+    [x]="menuX()"
+    [y]="menuY()"
+    (rename)="rename()"
+    (delete)="delete()"
+>
+</app-context-menu>

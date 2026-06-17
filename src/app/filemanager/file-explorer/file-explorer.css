@@ -1,0 +1,54 @@
+.explorer-window {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+     border: 1px solid #ddd;
+    font-family: Segoe UI, sans-serif;
+}
+
+.title-bar {
+    background: linear-gradient(90deg, #0078d7, #005ea6);
+    color: white;
+    padding: 12px 16px;
+    font-weight: 600;
+}
+
+.toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #e5e5e5;
+
+    button {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+            background: #f5f5f5;
+        }
+    }
+}
+
+.content {
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    min-height: 400px;
+    background: #fafafa;
+}
+.content-folder {
+    padding: 10px;
+    min-height: 400px;
+    background: #fafafa;
+}
+.content-file {
+    padding: 10px;
+
+    min-height: 400px;
+    background: #fafafa;
+}

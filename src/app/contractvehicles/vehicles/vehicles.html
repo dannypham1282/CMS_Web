@@ -1,0 +1,14 @@
+ <div  style="width:1200px;height: 400px; ">
+      <!-- The AG Grid component, with Dimensions, CSS Theme, Row Data, and Column Definition -->
+      <ag-grid-angular
+        [id]="myGrid"
+         class="ag-theme-quartz"
+        style="height: 100%;"
+         [theme]="theme"
+        [rowData]="rowData"
+        [columnDefs]="colDefs"
+        [defaultColDef]="defaultColDef"
+        (gridReady)="onGridReady($event)"
+         (cellValueChanged)="onCellValueChanged($event)"></ag-grid-angular>
+
+    </div>

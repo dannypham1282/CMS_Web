@@ -1,0 +1,10 @@
+@if (visible) {
+<div class="context-menu" [style.left.px ]="x" [style.top.px ]="y">
+    <div class="menu-item" (click)="rename.emit()">
+       <i class="fa fa-pencil"></i>  Rename
+    </div>
+    <div class="menu-item" (click)="delete.emit()">
+            <i class="fa fa-trash"></i> Delete
+        </div>
+        </div>
+    }

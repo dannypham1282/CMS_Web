@@ -1,0 +1,31 @@
+.sidebar {
+  width: 260px;
+  background: #212529;
+  color: white;
+  transition: all .3s ease;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  width: 0px;
+}
+
+.sidebar-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 1px solid #444;
+}
+
+.sidebar-header i {
+  margin-right: 10px;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+}

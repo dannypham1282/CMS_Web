@@ -25,16 +25,22 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
               "src/styles.css"
-            ]
+            ],
+             "scripts": [
+        "node_modules/@popperjs/core/dist/umd/popper.min.js",
+        "node_modules/bootstrap/dist/js/bootstrap.min.js"
+      ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2mb",
+                  "maximumError": "2MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -54,6 +60,9 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+            "options": {           
+              "proxyConfig": "src/proxy.conf.json"
+            },  
           "configurations": {
             "production": {
               "buildTarget": "MyApp:build:production"

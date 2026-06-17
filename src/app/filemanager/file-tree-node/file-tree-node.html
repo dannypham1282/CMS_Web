@@ -1,0 +1,34 @@
+<div class="node" [class.selected]="selectedId === node.id" 
+(click)="nodeClick.emit(node)"
+(contextmenu)="$event.preventDefault(); nodeRightClick.emit({
+    event: $event,
+    node: node
+})">
+<span class="toggle node-level-{{node.level}}" (click)="toggle($event)">
+    @if(node.type === 'folder') {
+        <i class="fa" [ngClass]="node.expanded ? 'fa-folder-open' : 'fa-folder'"></i>
+    } @else {
+        @if (node.name.toLocaleLowerCase().indexOf(".docx") !== -1) {
+        <i class="fa fa-file-word"></i>
+        }@else if (node.name.toLocaleLowerCase().indexOf(".xlsx") !== -1) {
+            <i class="fa fa-file-excel"></i>
+        } @else if (node.name.toLocaleLowerCase().indexOf(".pdf") !== -1) {
+            <i class="fa fa-file-pdf"></i>
+        } 
+        @else {
+            <i class="fa-thin fa-file-alt"></i>
+        }
+    }
+   
+</span>
+<span class="name" (click)="toggle($event)">{{node.name}}</span>
+</div>
+@if(node.expanded && node.children) {
+  @for (childnode of node.children;track childnode.id) {
+    <app-file-tree-node [node]="childnode" 
+    [selectedId]="selectedId"
+    (nodeClick)="nodeClick.emit($event)"
+    (nodeRightClick)="nodeRightClick.emit($event)">
+    </app-file-tree-node>
+  }
+}

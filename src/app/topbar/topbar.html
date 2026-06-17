@@ -1,0 +1,49 @@
+<nav class="navbar navbar-dark bg-primary px-2">
+<span class="site-brand">
+    Contract Management System
+  </span>
+  <button
+    class="btn btn-sm btn-light"
+    (click)="toggleSidebar.emit()">
+    <i class="fas fa-bars"></i>
+  </button>
+  <div class="ms-auto">
+    <div class="dropdown">
+      <button
+        class="btn btn-light dropdown-toggle"
+        data-bs-toggle="dropdown">
+        <i class="fas fa-user-circle me-2"></i>
+        Administrator
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" (click)="topBarNewTabGroup('Organization')">
+            <i class="fas fa-user me-2" ></i>
+            Profile
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item">
+            <i class="fas fa-lock me-2"></i>
+            Change Password
+          </a>
+        </li>
+
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+
+        <li>
+          <a class="dropdown-item">
+            <i class="fas fa-right-from-bracket me-2"></i>
+            Logout
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+</nav>

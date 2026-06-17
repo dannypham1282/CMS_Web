@@ -1,0 +1,67 @@
+.node {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+
+    &:hover {
+        background: #f0f4ff;
+    }
+
+    &.selected {
+        background: #cce5ff;
+    }
+}
+
+.children {
+    padding-left: 20px;
+}
+
+.node-level-0 {
+   padding: 0 0 0 20px;
+}
+.node-level-1 {
+   padding: 0 0 0 40px;
+}
+.node-level-2 {
+   padding: 0 0 0 60px;
+}
+.node-level-3 {
+   padding: 0 0 0 80px;
+}
+
+.node-level-4 {
+   padding: 0 0 0 100px;
+}
+
+.node-level-5 {
+   padding: 0 0 0 120px;
+}
+
+.node-level-6 {
+   padding: 0 0 0 140px;
+}
+
+.node-level-7 {
+   padding: 0 0 0 160px;
+}
+
+.node-level-8 {
+   padding: 0 0 0 180px;
+}
+
+.node-level-9 {
+   padding: 0 0 0 200px;
+}
+
+.node-level-10 {
+   padding: 0 0 0 220px;
+}
+
+.toggle {
+  
+}
+    

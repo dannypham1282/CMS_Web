@@ -1,0 +1,27 @@
+ <div class="tab-content">
+ <div class="row ">
+     <div class="col col-md-2 mb-2">
+     <button class="btn btn-xs btn-outline-primary" [disabled]="disableAddButton" (click)="addNewOrganization()"><i class="fa fa-plus"></i>Add &nbsp;</button>
+   </div> 
+</div>
+ <div class="row">
+     
+      <!-- The AG Grid component, with Dimensions, CSS Theme, Row Data, and Column Definition -->
+      <ag-grid-angular
+        [gridId]="myGrid"
+        [id]="myGrid"
+         class="ag-theme-quartz"
+        style="height: 300px;width:100%;"
+         [theme]="theme"
+  [rowHeight]="rowHeight"
+         [pagination]="true"
+       [paginationPageSize]="10"
+       [paginationPageSizeSelector]="[10, 20, 50, 100]"
+        [rowData]="rowData"
+        [columnDefs]="colDefs"
+        [defaultColDef]="defaultColDef"
+        (gridReady)="onGridReady($event)"
+         (cellValueChanged)="onCellValueChanged($event)"></ag-grid-angular>
+    </div>
+    </div>
+

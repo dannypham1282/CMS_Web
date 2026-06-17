@@ -1,0 +1,16 @@
+.context-menu {
+    position: fixed;
+    width: 180px;
+    background: #ffffff;
+    border: 1px solid #d0d0d0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.menu-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+}

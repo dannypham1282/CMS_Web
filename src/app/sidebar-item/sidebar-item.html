@@ -1,0 +1,57 @@
+<li>
+
+  <!-- Parent Menu -->
+
+  <div
+    class="menu-item"
+    [class.has-children]="item.children"
+    (click)="item.children ? toggleMenu() : null">
+
+    <div class="left">
+@if(item.icon)
+{
+      <i 
+         [class]="item.icon">
+      </i>
+    }
+@if (!collapsed)
+{
+      <span>
+        {{ item.title }}
+      </span>
+    }
+
+    </div>
+ @if(item.children && !collapsed)
+ {
+    <i 
+      class="fas fa-chevron-down">
+    </i>
+  }
+
+  </div>
+
+  <!-- Leaf Menu -->
+
+  <a
+    class="route-link">
+  </a>
+
+  <!-- Children -->
+
+  @if(item.children)
+  {
+  <ul
+    class="submenu"
+    [class.expanded]="item.expanded">
+   @for (child of item.children;track child.title)
+   {
+    <app-sidebar-item
+      
+      [item]="child"
+      [collapsed]="collapsed">
+    </app-sidebar-item>
+  }
+  </ul>
+}
+</li>
