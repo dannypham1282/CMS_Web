@@ -13,15 +13,15 @@ export class ContractVehicle {
 }
  
 export class Organization {
-   GridAction:string='';
-   ID :number =0 ;
-   GUID:string = '';
-   Name :string = '';
-   ShortName :string = '';
-   Description:string = '';
-   Address:string = '';
-   PhoneNumber:string = '';
-   Email:string='';
+   gridAction:string='';
+   id :number =0 ;
+   guid:string = '';
+   name :string = '';
+   shortName :string = '';
+   description:string = '';
+   address:string = '';
+   phoneNumber:string = '';
+   email:string='';
    constructor(init?: Partial<Organization>) {
        Object.assign(this, init);
    }

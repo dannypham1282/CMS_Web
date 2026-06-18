@@ -45,7 +45,6 @@ export class App {
     }
     if (component) {
       const tabId = this.child.addTab(component, path, `/${path.toLowerCase()}`, data);
-      console.log(document.getElementById('tabId_' + tabId));
     } else {
       console.warn('No component found for the given path:', path);
     }

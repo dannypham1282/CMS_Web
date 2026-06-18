@@ -70,7 +70,7 @@ updateContractVehicle(Id:number, field: string, value: string, oldValue: string)
       (data) => {
         this.rowData = data.ContractVehicles; // Assign the fetched data to rowData
         this.orgList = data.Organizations; // Assign the fetched organization data to orgList
-        this.organizationDropdown = this.orgList.map(org => org.Name); // Extract organization names for dropdown
+        this.organizationDropdown = this.orgList.map(org => org.name); // Extract organization names for dropdown
         this.organizationDropdown.unshift('-- Select Organization --'); // Add an empty option at the beginning of the dropdown list
         this.gridApi.setGridOption('rowData', this.rowData); // Set the row data after fetching from API
       },
@@ -97,11 +97,11 @@ updateContractVehicle(Id:number, field: string, value: string, oldValue: string)
     valueFormatter: (params) => {
       // Display the name, not the ID
     
-      return this.orgList.find(opt => opt.ID === params.value)?.Name || params.value;
+      return this.orgList.find(opt => opt.id === params.value)?.name || params.value;
     },
     valueParser: (params) => {
       // Convert selected name back to ID
-      return this.orgList.find(opt => opt.Name === params.newValue)?.ID || params.newValue ;
+      return this.orgList.find(opt => opt.name === params.newValue)?.id || params.newValue ;
     },  
     },
     {
