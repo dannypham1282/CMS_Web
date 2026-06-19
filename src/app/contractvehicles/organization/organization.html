@@ -1,8 +1,8 @@
  <div class="tab-content">
- <div class="row ">
+ <div class="row mb-2">
      <div class="col col-md-12 mb-12">
-     <button class="btn btn-xs btn-outline-primary" [disabled]="isAddingNewRow" (click)="addNewRecord()"><i class="fa fa-plus"></i>Add &nbsp;</button>
-      <button class="btn btn-xs btn-outline-primary"  (click)="loadData()"><i class="fa fa-refresh"></i>Refresh &nbsp;</button>
+     <button class="btn btn-sm btn-outline-primary" [disabled]="isAddingNewRow" (click)="addNewRecord()"><i class="fa fa-plus"></i>Add &nbsp;</button>
+     &nbsp;<button class="btn btn-sm btn-outline-primary"  (click)="refreshGrid()"><i class="fa fa-refresh"></i>Refresh &nbsp;</button>
    </div> 
 </div>
  <div class="row">
@@ -14,8 +14,7 @@
          class="ag-theme-quartz"
         style="height: 300px;width:100%;"
          [theme]="theme"
-  [rowHeight]="rowHeight"
-        
+  [rowHeight]="rowHeight"    
         [rowData]="rowData"
         [columnDefs]="colDefs"
         [defaultColDef]="defaultColDef"

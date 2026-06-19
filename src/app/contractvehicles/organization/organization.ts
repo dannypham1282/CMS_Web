@@ -1,7 +1,24 @@
-import { Component, inject, Input, input, Optional } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  input,
+  Optional,
+  Signal,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AgGridAngular } from 'ag-grid-angular';
-import { AllCommunityModule, CellValueChangedEvent, ColDef, GridReadyEvent, ModuleRegistry, themeQuartz,themeBalham } from 'ag-grid-community';
+import {
+  AllCommunityModule,
+  CellValueChangedEvent,
+  ColDef,
+  GridReadyEvent,
+  ModuleRegistry,
+  themeQuartz,
+  themeBalham,
+} from 'ag-grid-community';
 import { Organization } from '../../entities/contractVehicle';
 import { RowActionsComponent } from '../../services/row-actions.component';
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -15,31 +32,29 @@ import { delay, Observable } from 'rxjs';
   styleUrl: './organization.css',
 })
 export class OrganizationComponent {
-isAddingNewRow = false;
-private http = inject(HttpClient);
-//Grid setting
+  constructor(private cdr: ChangeDetectorRef) {}
+  isAddingNewRow = false;
+  private http = inject(HttpClient);
+  //Grid setting
   theme = themeQuartz;
   myGrid: string = 'organization_' + Math.random().toString(36).substring(2, 15);
-  organizationModel: Observable<Organization> = new Observable();
+  organization: Organization = new Organization();
   gridApi: any;
-  rowData!: any[];
+  rowData: Array<Organization> = [];
   newFieldValue: string = '';
-  rowHeight:number = 40;
-  disableAddButton:boolean= false;
-  constructor(@Optional() private rowActionsComponent:RowActionsComponent){}
-  
-  onCellValueChanged($event: CellValueChangedEvent<Organization,any,any,any>) {
-    if ($event.node.data?.gridAction==='new')
-      {
-        console.log("Ignore Cell save for new row");
-      } 
-      else{
-    let oldValue: any = $event.oldValue;
-     let newValue: any  = $event.newValue;
-     console.log($event.node.data)
-     this.newFieldValue = newValue;
+  rowHeight: number = 40;
+  disableAddButton: boolean = false;
+
+  onCellValueChanged($event: CellValueChangedEvent<Organization, any, any, any>) {
+    if ($event.node.data?.gridAction === 'new') {
+      console.log('Ignore Cell save for new row');
+    } else {
+      let oldValue: any = $event.oldValue;
+      let newValue: any = $event.newValue;
+      console.log($event.node.data);
+      this.newFieldValue = newValue;
       if (oldValue !== newValue) {
-   console.log("cell value " + newValue)
+        console.log('cell value ' + newValue);
       }
     }
   }
@@ -52,48 +67,82 @@ private http = inject(HttpClient);
     const newRow = {
       id: 0,
       name: '',
-      gridAction:'new'
+      gridAction: 'new',
     };
 
     this.gridApi.applyTransaction({
       add: [newRow],
-      addIndex: 0
+      addIndex: 0,
     });
 
-     this.gridApi.startEditingCell({
+    this.gridApi.startEditingCell({
       rowIndex: 0,
-      colKey: 'name'
+      colKey: 'name',
     });
   }
 
   saveRow(row: any): void {
-    row.isNew = false;
-    row.ID=100;
-    this.gridApi.refreshCells({
-      force: true
-    });
+    this.http.post<any>('/api/admin/organization/create', row).subscribe(
+      (createdOrganization) => {
+        // Assign the returned Organization directly (API returns Organization object)
+        this.organization = createdOrganization.result;
+        row.id = this.organization.id; // Update the row with the new ID from the server
+        row.gridAction = ''; // Clear the gridAction to indicate it's no longer a new row
+        //this.gridApi.applyTransaction({ update: [row] }); // Update the grid with the new data
+        //this.gridApi.refreshCells({ rowNodes: [this.gridApi.getRowNode(row.id)], force: true }); // Refresh the specific row
+        console.log('Saving row', row);
+        this.gridApi.redrawRows({ rowNodes: [row] }); // Redraw the specific row to reflect changes
+        
+      },
+      (error) => {
+        console.error('Error saving organization', error);
+      }
+    );
     this.isAddingNewRow = false;
   }
 
   cancelRow(row: any): void {
     this.gridApi.applyTransaction({
-      remove: [row]
+      remove: [row],
     });
     this.isAddingNewRow = false;
   }
 
-  ngOnInit(): void {
-    //this.loadData();
+  deleteRow(row: any) {
+ const isConfirmed = window.confirm(`Are you sure you want to delete ${name}?`);
+    if (isConfirmed) {
+       this.http.post<any>(`/api/admin/organization/delete?id=${row.id}`, {}).subscribe(
+      () => {
+        console.log('Organization deleted successfully');
+        this.gridApi.applyTransaction({ remove: [row] }); // Remove the row from the grid after successful deletion
+      },
+      (error) => {
+        console.error('Error deleting organization', error);
+      }
+    );
+    } 
   }
 
-  loadData(): void {
-    this.http.get<any[]>(`api/admin/organization/getall`).subscribe(
+  ngOnInit(): void {
+    // this.loadData();
+  }
+ 
+  refreshGrid() {
+    this.loadData();
+    this.isAddingNewRow = false;
+  }
+
+   loadData(): void { 
+    this.gridApi.setGridOption('loading', true);
+    this.http.get<Organization[]>('/api/admin/organization/getall').subscribe(
       (data) => {
         this.rowData = data; // Assign the fetched data to rowData
         this.gridApi.setGridOption('rowData', this.rowData); // Set the row data after fetching from API
+        this.cdr.detectChanges();
+        this.gridApi.setGridOption('loading', false);
       },
       (error) => {
-        console.error('API Error:', error); // Log any errors for debugging
+        console.error('API Error:', error);
       }
     );
   }
@@ -102,68 +151,82 @@ private http = inject(HttpClient);
     params.api.sizeColumnsToFit();
     this.gridApi = params.api;
     this.loadData();
-    //this.gridApi.setGridOption('rowData', this.rowData);
   }
 
-  // onGridReady(params: GridReadyEvent<Organization>) { 
-  //     params.api.sizeColumnsToFit();
-  //     this.gridApi = params.api;
-  //     this.http.get<Organization[]>('/api/admin/organization/getall').subscribe(
-  //       (data) => {   
-  //        delay(500); // Simulate a delay of 500 milliseconds
-  //         this.rowData = data; // Assign the fetched data to rowData 
-  //        this.gridApi.setGridOption('rowData', this.rowData); // Set the row data after fetching from API        
-  //       },
-  //       (error) => {
-  //         console.error('API Error:', error); // Log any errors for debugging
-  //       }
-  //     );    
-  //   }
-
-    // Column Definitions: Defines & controls grid columns.
-      colDefs: ColDef<Organization>[] = [
-        {
+  // Column Definitions: Defines & controls grid columns.
+  colDefs: ColDef<Organization>[] = [
+    {
       headerName: '',
       cellRenderer: RowActionsComponent,
-      cellRendererParams:{
-                onSave: (row: any) => this.saveRow(row),
-        onCancel: (row: any) => this.cancelRow(row)
-            },
+      cellRendererParams: {
+        onSave: (row: any) => this.saveRow(row),
+        onCancel: (row: any) => this.cancelRow(row),
+        onDelete: (row: any) => this.deleteRow(row),
+      },
       editable: false,
       sortable: false,
       filter: false,
-      width: 120
+      width: 130,
     },
-        { field: "id", width: 50 ,hide:true},
-        { field: "guid" , hide: true},
-        { field: "name", editable: true, width:300, headerName: "Organization Name", filter: 'agTextColumnFilter' },
-        { field: "shortName" ,editable: true,hide: false,headerName:"Short Name" , filter: 'agTextColumnFilter'},
-        { field: "description" ,editable: true,hide: false,headerName:"Description" , filter: 'agTextColumnFilter'},
-        { field: "address" ,editable: true,hide: false,headerName:"Address" , filter: 'agTextColumnFilter'},
-        { field: "phoneNumber" ,editable: true,hide: false,headerName:"Phone Number" , filter: 'agTextColumnFilter'},
-        { field: "email" ,editable: true,hide: false,headerName:"Email" , filter: 'agTextColumnFilter'}    
-      ];
-      defaultColDef: ColDef = {
-        flex: 1,
-      };
+    { field: 'id', width: 50, hide: true },
+    { field: 'guid', hide: true },
+    {
+      field: 'name',
+      editable: true,
+      width: 300,
+      headerName: 'Organization Name',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'shortName',
+      editable: true,
+      hide: false,
+      headerName: 'Short Name',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'description',
+      editable: true,
+      hide: false,
+      headerName: 'Description',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'address',
+      editable: true,
+      hide: false,
+      headerName: 'Address',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'phoneNumber',
+      editable: true,
+      hide: false,
+      headerName: 'Phone Number',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'email',
+      editable: true,
+      hide: false,
+      headerName: 'Email',
+      filter: 'agTextColumnFilter',
+    },
+  ];
+  defaultColDef: ColDef = {
+    flex: 1,
+  };
 
-   addNewOrganization()
-   {
-    const newItem = {GridAction:'new'};
+  addNewOrganization() {
+    const newItem = { gridAction: 'new' };
     this.gridApi.applyTransaction({ add: [newItem] });
     this.disableAddButton = true;
-   }
-   goToNext() {
-  this.gridApi.paginationGoToNextPage();
-}
+  }
+  goToNext() {
+    this.gridApi.paginationGoToNextPage();
+  }
 
-goToPage(pageNo: number) {
-  this.gridApi.paginationGoToPage(pageNo);
-}
-ngAfterViewInit() {
-  // Pushes the update to the next execution cycle
-  setTimeout(() => {
-    //this.isLoading = false;
-  });
-}
+  goToPage(pageNo: number) {
+    this.gridApi.paginationGoToPage(pageNo);
+  }
 }

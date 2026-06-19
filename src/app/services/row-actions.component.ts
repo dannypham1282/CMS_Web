@@ -6,17 +6,23 @@ type CustomRenderParams = ICellRendererParams & {
   GridAction: string;
   onSave: (row: any) => void;
   onCancel: (row: any) => void;
+  onDelete: (row: any) => void;
 };
 
 @Component({
   selector: 'app-row-actions',
   standalone: true,
   template: `
-    @if(params.data?.GridAction==='new')
+    @if(params.data?.gridAction==='new')
       { 
       <button class="btn btn-xs btn-outline-success" (click)="save()"><i class="fa fa-save"></i></button>&nbsp;
       <button class="btn btn-xs btn-outline-danger" (click)="cancel()"><i class="fa fa-cancel"></i></button>
       }
+      @else
+        {
+          
+          <button class="btn btn-xs btn-outline-danger" (click)="delete()"><i class="fa fa-trash"></i></button>&nbsp;
+        }
   `
 })
 export class RowActionsComponent implements ICellRendererAngularComp {
@@ -45,12 +51,7 @@ refresh(params: any): boolean {
     this.params.onCancel(this.params.data);
   }
   
-  deleteRow() {
-// 1. Fetch data items from selected grid rows
-    const selectedData = this.params.node.data;
-    console.log(selectedData)
-    // 2. Remove items from the grid view immediately
-    this.params.api.applyTransaction({ remove: [selectedData]});
-     this.isEditing = false;
+  delete() {
+    this.params.onDelete(this.params.data);
   }
 }
