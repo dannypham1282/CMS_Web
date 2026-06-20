@@ -1,6 +1,7 @@
 import {
   ChangeDetectorRef,
   Component,
+  Host,
   inject,
   Input,
   input,
@@ -9,7 +10,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AgGridAngular } from 'ag-grid-angular';
+import { AgGridAngular, AgGridModule } from 'ag-grid-angular';
 import {
   AllCommunityModule,
   CellValueChangedEvent,
@@ -24,15 +25,19 @@ import { RowActionsComponent } from '../../services/row-actions.component';
 ModuleRegistry.registerModules([AllCommunityModule]);
 import { HttpClient } from '@angular/common/http';
 import { delay, Observable } from 'rxjs';
+import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog';
+import{ AlertDialogComponent } from '../../alert-dialog/alert-dialog';
+
 
 @Component({
   selector: 'app-organization',
-  imports: [CommonModule, AgGridAngular],
+  standalone: true,
+  imports: [CommonModule, AgGridModule, ConfirmationDialogComponent, AlertDialogComponent],
   templateUrl: './organization.html',
   styleUrl: './organization.css',
 })
 export class OrganizationComponent {
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
   isAddingNewRow = false;
   private http = inject(HttpClient);
   //Grid setting
@@ -44,6 +49,44 @@ export class OrganizationComponent {
   newFieldValue: string = '';
   rowHeight: number = 40;
   disableAddButton: boolean = false;
+
+  //Confrimation Dialog
+  // Signal state to manage the dialog's lifecycle
+  isDialogVisible = signal<boolean>(false);
+  dialogTitle = signal<string>('Delete Record');
+  dialogMessage = signal<string>('Are you sure you want to delete this record?');
+  triggerAction() {
+    this.isDialogVisible.set(true);
+  }
+
+  handleConfirmation() {
+    console.log('Action Executed successfully!');
+    this.isDialogVisible.set(false);
+    // Insert your backend service delete logic here
+  }
+
+  handleCancellation() {
+    console.log('Action aborted by user.');
+    this.isDialogVisible.set(false);
+  }
+  //End of Confirmation Dialog
+
+  //Alert Dialog
+  isAlertVisible = signal<boolean>(false);
+  alertTitle = signal<string>('Action Result');
+  alertMessage = signal<string>('');
+
+  showAlert(title: string, message: string) {
+    this.alertTitle.set(title);
+    this.alertMessage.set(message);
+    this.isAlertVisible.set(true);
+  }   
+
+  handleAlertClose() {
+    this.isAlertVisible.set(false);
+  }
+  //End of Alert Dialog
+
 
   onCellValueChanged($event: CellValueChangedEvent<Organization, any, any, any>) {
     if ($event.node.data?.gridAction === 'new') {
@@ -84,21 +127,17 @@ export class OrganizationComponent {
   saveRow(row: any): void {
     this.http.post<any>('/api/admin/organization/create', row).subscribe(
       (createdOrganization) => {
-        // Assign the returned Organization directly (API returns Organization object)
         this.organization = createdOrganization.result;
         row.id = this.organization.id; // Update the row with the new ID from the server
-        row.gridAction = ''; // Clear the gridAction to indicate it's no longer a new row
-        //this.gridApi.applyTransaction({ update: [row] }); // Update the grid with the new data
-        //this.gridApi.refreshCells({ rowNodes: [this.gridApi.getRowNode(row.id)], force: true }); // Refresh the specific row
-        console.log('Saving row', row);
-        this.gridApi.redrawRows({ rowNodes: [row] }); // Redraw the specific row to reflect changes
-        
+        row.gridAction = 'added'; // Clear the gridAction after saving
+        this.isAddingNewRow = false;
       },
-      (error) => {
-        console.error('Error saving organization', error);
+      (err) => {       
+        this.showAlert('Error', 'Error saving organization. Please contact administrator for assistance'); // Show alert before saving 
       }
     );
-    this.isAddingNewRow = false;
+     this.gridApi.refreshCells({
+        force: true});
   }
 
   cancelRow(row: any): void {
@@ -109,30 +148,32 @@ export class OrganizationComponent {
   }
 
   deleteRow(row: any) {
- const isConfirmed = window.confirm(`Are you sure you want to delete ${name}?`);
-    if (isConfirmed) {
-       this.http.post<any>(`/api/admin/organization/delete?id=${row.id}`, {}).subscribe(
-      () => {
-        console.log('Organization deleted successfully');
-        this.gridApi.applyTransaction({ remove: [row] }); // Remove the row from the grid after successful deletion
-      },
-      (error) => {
-        console.error('Error deleting organization', error);
-      }
-    );
+    // Handle the confirmation result
+    this.triggerAction();
+    this.handleConfirmation = () => {
+      this.http.post<any>(`/api/admin/organization/delete?id=${row.id}`, {}).subscribe(
+        () => {
+          console.log('Organization deleted successfully');
+          this.gridApi.applyTransaction({ remove: [row] });  
+          this.isDialogVisible.set(false);// Remove the row from the grid after successful deletion
+        },
+        (err) => {
+          alert('Error deleting organization. Please contact administrator for assistance');
+        }
+      );
     } 
   }
 
   ngOnInit(): void {
     // this.loadData();
   }
- 
+
   refreshGrid() {
     this.loadData();
     this.isAddingNewRow = false;
   }
 
-   loadData(): void { 
+  loadData(): void {
     this.gridApi.setGridOption('loading', true);
     this.http.get<Organization[]>('/api/admin/organization/getall').subscribe(
       (data) => {

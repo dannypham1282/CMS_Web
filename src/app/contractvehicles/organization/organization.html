@@ -22,4 +22,18 @@
          (cellValueChanged)="onCellValueChanged($event)"></ag-grid-angular>
     </div>
     </div>
+    <!-- Reusable Dialog Instance -->
+<app-confirmation-dialog
+  [isOpen]="isDialogVisible()"
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  (confirmed)="handleConfirmation()"
+  (cancelled)="handleCancellation()">
+</app-confirmation-dialog>
 
+<app-alert-dialog
+  [isOpen]="isAlertVisible()"
+  [title]="alertTitle()"
+  [message]="alertMessage()"
+  (confirmedOk)="handleAlertClose()">   
+</app-alert-dialog> 

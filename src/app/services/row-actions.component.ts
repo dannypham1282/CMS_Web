@@ -3,7 +3,7 @@ import { ICellRendererAngularComp } from 'ag-grid-angular';
 import { ICellRendererParams } from 'ag-grid-community';
 
 type CustomRenderParams = ICellRendererParams & {
-  GridAction: string;
+  gridAction: string;
   onSave: (row: any) => void;
   onCancel: (row: any) => void;
   onDelete: (row: any) => void;
@@ -19,21 +19,17 @@ type CustomRenderParams = ICellRendererParams & {
       <button class="btn btn-xs btn-outline-danger" (click)="cancel()"><i class="fa fa-cancel"></i></button>
       }
       @else
-        {
-          
+        {         
           <button class="btn btn-xs btn-outline-danger" (click)="delete()"><i class="fa fa-trash"></i></button>&nbsp;
         }
   `
 })
 export class RowActionsComponent implements ICellRendererAngularComp {
-  disableAddButton = output<boolean>();
-  public params!: CustomRenderParams;
-  public isEditing = true;
-  public isNewRow = false;
-  public targetTable = "";
+  params!: CustomRenderParams;
 
   agInit(params: CustomRenderParams): void {
     this.params = params;
+
   }
 
 refresh(params: any): boolean {
@@ -41,10 +37,28 @@ refresh(params: any): boolean {
     return true;
   }
 
-  save(): void {
-    this.params.onSave(this.params.data);
-    this.params.data.GridAction = '';
+  setActionValue(): void {
+    //this.params.data?.gridAction = 'added';
   }
+
+  save(): void {
+   this.params.onSave(this.params.data);
+   let gridAction = '';
+   
+   this.checkGridAction();
+
+   
+  }
+
+  checkGridAction(): void
+  {
+   
+    this.params.data.gridAction = '';
+    console.log(this.params.data)
+    this.params.api.refreshCells({
+        force: true});
+  }
+  
     
 
   cancel(): void {
