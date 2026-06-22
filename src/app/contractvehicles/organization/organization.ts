@@ -28,8 +28,8 @@ import { delay, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog';
 import { AlertDialogComponent } from '../../alert-dialog/alert-dialog';
 import { gridcellupdate } from '../../entities/grid-cell-update';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+//import * as pdfMake from 'pdfmake/build/pdfmake';
+//import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 
 // Initialize the pdfMake virtual fonts registry
 //(pdfMake as any).vfs = (pdfFonts as any)['pdfMake'].vfs;
@@ -227,7 +227,7 @@ export class OrganizationComponent {
     };
 
     // 4. Download generated file via browser
-    pdfMake.createPdf(docDefinition).download('exported-grid-data.pdf');
+   // pdfMake.createPdf(docDefinition).download('exported-grid-data.pdf');
   }
 
   ngOnInit(): void {
