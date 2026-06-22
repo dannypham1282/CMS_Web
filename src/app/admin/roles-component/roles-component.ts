@@ -28,21 +28,14 @@ import { delay, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog';
 import { AlertDialogComponent } from '../../alert-dialog/alert-dialog';
 import { gridcellupdate } from '../../entities/grid-cell-update';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-
-// Initialize the pdfMake virtual fonts registry
-//(pdfMake as any).vfs = (pdfFonts as any)['pdfMake'].vfs;
-
 @Component({
-  selector: 'app-organization',
-  standalone: true,
-  imports: [CommonModule, AgGridModule, ConfirmationDialogComponent, AlertDialogComponent],
-  templateUrl: './organization.html',
-  styleUrl: './organization.css',
+  selector: 'app-roles-component',
+ imports: [CommonModule, AgGridModule, ConfirmationDialogComponent, AlertDialogComponent],
+  templateUrl: './roles-component.html',
+  styleUrl: './roles-component.css',
 })
-export class OrganizationComponent {
-  constructor(private cdr: ChangeDetectorRef) {}
+export class RolesComponent {
+ constructor(private cdr: ChangeDetectorRef) {}
   isAddingNewRow = false;
   private http = inject(HttpClient);
   //Grid setting
@@ -109,7 +102,7 @@ export class OrganizationComponent {
         };
 
         this.http
-          .post<gridcellupdate>('/api/admin/organization/UpdateCellValue', gridcellobj)
+          .post<gridcellupdate>('/api/admin/roles/UpdateCellValue', gridcellobj)
           .subscribe(
             (result) => {},
             (err) => {
@@ -144,7 +137,7 @@ export class OrganizationComponent {
     if (row.name === '') {
       this.showAlert('Require Field Error', 'Oranization Name is required.');
     } else {
-      this.http.post<any>('/api/admin/organization/create', row).subscribe(
+      this.http.post<any>('/api/admin/roles/create', row).subscribe(
         (createdOrganization) => {
           this.organization = createdOrganization.result;
           row.id = this.organization.id; // Update the row with the new ID from the server
@@ -172,7 +165,7 @@ export class OrganizationComponent {
     // Handle the confirmation result
     this.triggerAction();
     this.handleConfirmation = () => {
-      this.http.post<any>(`/api/admin/organization/delete?id=${row.id}`, {}).subscribe(
+      this.http.post<any>(`/api/admin/roles/delete?id=${row.id}`, {}).subscribe(
         () => {
           console.log('Organization deleted successfully');
           this.gridApi.applyTransaction({ remove: [row] });
@@ -227,7 +220,7 @@ export class OrganizationComponent {
     };
 
     // 4. Download generated file via browser
-    pdfMake.createPdf(docDefinition).download('exported-grid-data.pdf');
+    //pdfMake.createPdf(docDefinition).download('exported-grid-data.pdf');
   }
 
   ngOnInit(): void {
@@ -241,7 +234,7 @@ export class OrganizationComponent {
 
   loadData(): void {
     this.gridApi.setGridOption('loading', true);
-    this.http.get<Organization[]>('/api/admin/organization/getall').subscribe(
+    this.http.get<Organization[]>('/api/admin/roles/getall').subscribe(
       (data) => {
         this.rowData = data; // Assign the fetched data to rowData
         this.gridApi.setGridOption('rowData', this.rowData); // Set the row data after fetching from API
@@ -305,14 +298,7 @@ export class OrganizationComponent {
       editable: true,
       valueSetter: this.duplicateValueSetter.bind(this),
       width: 300,
-      headerName: 'Organization Name',
-      filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'shortName',
-      editable: true,
-      hide: false,
-      headerName: 'Short Name',
+      headerName: 'Role Name',
       filter: 'agTextColumnFilter',
     },
     {
@@ -321,28 +307,7 @@ export class OrganizationComponent {
       hide: false,
       headerName: 'Description',
       filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'address',
-      editable: true,
-      hide: false,
-      headerName: 'Address',
-      filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'phoneNumber',
-      editable: true,
-      hide: false,
-      headerName: 'Phone Number',
-      filter: 'agTextColumnFilter',
-    },
-    {
-      field: 'email',
-      editable: true,
-      hide: false,
-      headerName: 'Email',
-      filter: 'agTextColumnFilter',
-    },
+    }
   ];
   defaultColDef: ColDef = {
     flex: 1,
@@ -361,3 +326,4 @@ export class OrganizationComponent {
     this.gridApi.paginationGoToPage(pageNo);
   }
 }
+

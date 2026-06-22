@@ -29,3 +29,11 @@ button,
 {
     font-size: 14px !important;
 }
+
+.error-cell{
+    background-color: brown;
+}
+
+.dropdown-item{
+    cursor: pointer;
+}

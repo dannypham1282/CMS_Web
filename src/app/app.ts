@@ -3,6 +3,7 @@ import { Tabgroup } from './tabgroup/tabgroup';
 import{Vehicles} from './contractvehicles/vehicles/vehicles';
 import{OrganizationComponent} from './contractvehicles/organization/organization';
 import { FileExplorer } from './filemanager/file-explorer/file-explorer';
+import { RolesComponent } from './admin/roles-component/roles-component';
 import { Topbar } from './topbar/topbar';
 import { Sidebar } from './sidebar/sidebar';
 @Component({
@@ -38,6 +39,10 @@ export class App {
         break;
       case 'FileExplorer':
         component = FileExplorer;
+        data = { }; // Example data to pass to the component
+        break;
+        case 'AdminRoles':
+        component = RolesComponent;
         data = { }; // Example data to pass to the component
         break;
       default:
