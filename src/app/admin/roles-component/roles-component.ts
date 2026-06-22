@@ -28,6 +28,7 @@ import { delay, Observable } from 'rxjs';
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog';
 import { AlertDialogComponent } from '../../alert-dialog/alert-dialog';
 import { gridcellupdate } from '../../entities/grid-cell-update';
+import { roles } from '../../entities/roles';
 @Component({
   selector: 'app-roles-component',
  imports: [CommonModule, AgGridModule, ConfirmationDialogComponent, AlertDialogComponent],
@@ -40,10 +41,10 @@ export class RolesComponent {
   private http = inject(HttpClient);
   //Grid setting
   theme = themeQuartz;
-  myGrid: string = 'organization_' + Math.random().toString(36).substring(2, 15);
-  organization: Organization = new Organization();
+  myGrid: string = 'adminRole' + Math.random().toString(36).substring(2, 15);
+  roles: roles = new roles();
   gridApi: any;
-  rowData: Array<Organization> = [];
+  rowData: Array<roles> = [];
   newFieldValue: string = '';
   rowHeight: number = 40;
   disableAddButton: boolean = false;
@@ -85,7 +86,7 @@ export class RolesComponent {
   }
   //End of Alert Dialog
 
-  onCellValueChanged($event: CellValueChangedEvent<Organization, any, any, any>) {
+  onCellValueChanged($event: CellValueChangedEvent<roles, any, any, any>) {
     if ($event.node.data?.gridAction === 'new') {
       console.log('Ignore Cell save for new row');
     } else {
@@ -108,7 +109,7 @@ export class RolesComponent {
             (err) => {
               this.showAlert(
                 'Error Update Field ' + $event.colDef.field,
-                'Error saving organization. Please contact administrator for assistance',
+                'Error saving role. Please contact administrator for assistance',
               ); // Show alert before saving
             },
           );
@@ -135,19 +136,19 @@ export class RolesComponent {
 
   saveRow(row: any): void {
     if (row.name === '') {
-      this.showAlert('Require Field Error', 'Oranization Name is required.');
+      this.showAlert('Require Field Error', 'Role Name is required.');
     } else {
       this.http.post<any>('/api/admin/roles/create', row).subscribe(
-        (createdOrganization) => {
-          this.organization = createdOrganization.result;
-          row.id = this.organization.id; // Update the row with the new ID from the server
+        (createdRole) => {
+          this.roles = createdRole.result;
+          row.id = this.roles.id; // Update the row with the new ID from the server
           row.gridAction = 'added'; // Clear the gridAction after saving
           this.isAddingNewRow = false;
         },
         (err) => {
           this.showAlert(
             'Error',
-            'Error saving organization. Please contact administrator for assistance',
+            'Error saving role. Please contact administrator for assistance',
           ); // Show alert before saving
         },
       );
@@ -167,14 +168,14 @@ export class RolesComponent {
     this.handleConfirmation = () => {
       this.http.post<any>(`/api/admin/roles/delete?id=${row.id}`, {}).subscribe(
         () => {
-          console.log('Organization deleted successfully');
+          console.log('Role deleted successfully');
           this.gridApi.applyTransaction({ remove: [row] });
           this.isDialogVisible.set(false); // Remove the row from the grid after successful deletion
         },
         (err) => {
           this.showAlert(
             'Error',
-            'Error deleting organization. Please contact administrator for assistance',
+            'Error deleting role. Please contact administrator for assistance',
           );
         },
       );
@@ -234,7 +235,7 @@ export class RolesComponent {
 
   loadData(): void {
     this.gridApi.setGridOption('loading', true);
-    this.http.get<Organization[]>('/api/admin/roles/getall').subscribe(
+    this.http.get<roles[]>('/api/admin/roles/getall').subscribe(
       (data) => {
         this.rowData = data; // Assign the fetched data to rowData
         this.gridApi.setGridOption('rowData', this.rowData); // Set the row data after fetching from API
@@ -247,7 +248,7 @@ export class RolesComponent {
     );
   }
 
-  onGridReady(params: GridReadyEvent<Organization>) {
+  onGridReady(params: GridReadyEvent<roles>) {
     params.api.sizeColumnsToFit();
     this.gridApi = params.api;
     this.loadData();
@@ -277,7 +278,7 @@ export class RolesComponent {
   }
 
   // Column Definitions: Defines & controls grid columns.
-  colDefs: ColDef<Organization>[] = [
+  colDefs: ColDef<roles>[] = [
     {
       headerName: '',
       cellRenderer: RowActionsComponent,
@@ -306,6 +307,13 @@ export class RolesComponent {
       editable: true,
       hide: false,
       headerName: 'Description',
+      filter: 'agTextColumnFilter',
+    },
+    {
+      field: 'level',
+      editable: true,
+      hide: false,
+      headerName: 'Level',
       filter: 'agTextColumnFilter',
     }
   ];
